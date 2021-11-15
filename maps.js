@@ -1,7 +1,7 @@
 var map;
 var latitude = [];
 var longitude = [];
-var distance = [];
+
 
 function initMap() {
 
@@ -14,7 +14,7 @@ function initMap() {
 
   var position = new google.maps.LatLng(location.lat, location.lng);
 
-  var options = { styles: style, center: position, zoom: 15 };
+  var options = { styles: style, center: position, zoom: 18 };
 
   const mapDiv = document.getElementById('map');
   map = new google.maps.Map(mapDiv, options);
@@ -22,7 +22,7 @@ function initMap() {
   let marker = new google.maps.Marker({ position: location, map: map, label: "You are Here" });
 
   var service = new google.maps.places.PlacesService(map);
-  service.nearbySearch({location: location,radius: 1000,type: ['hospital'],keyword: "((Hospitals) AND (24 hours)",}, getNearbyPlaces);
+  service.nearbySearch({ location: location, radius: 1000, type: ['hospital'], keyword: "((Hospitals) AND (24 hours)", }, getNearbyPlaces);
 
 
   autocomplete = new google.maps.places.Autocomplete(document.getElementById('search'),
@@ -32,15 +32,15 @@ function initMap() {
       fields: ['geometry', 'name'],
     });
 
-    const originMarker = new google.maps.Marker({map: map});
-    originMarker.setVisible(false);
-    let originLocation = map.getCenter();
+  const originMarker = new google.maps.Marker({ map: map, label: 'You are Here' });
+  originMarker.setVisible(false);
+  let originLocation = map.getCenter();
 
   autocomplete.addListener("place_changed", () => {
 
     latitude = [];
     longitude = [];
-  
+
 
     originMarker.setVisible(false);
     originLocation = map.getCenter();
@@ -50,7 +50,7 @@ function initMap() {
     originLocation = place.geometry.location;
     console.log(originLocation)
     map.setCenter(originLocation);
-    map.setZoom(15);
+    map.setZoom(18);
 
     originMarker.setPosition(originLocation);
     originMarker.setVisible(true);
@@ -58,37 +58,26 @@ function initMap() {
     latitude.push(originLocation.lat());
     longitude.push(originLocation.lng());
 
-    service.nearbySearch({location: originLocation,radius: 1000,type: ['hospital'],keyword: "((Hospitals) AND (24 hours)",}, getNearbyPlaces);
+    service.nearbySearch({ location: originLocation, radius: 1000, type: ['hospital'], keyword: "((Hospitals) AND (24 hours)", }, getNearbyPlaces);
 
 
   });
 }
 
 // GET NEARBY PLACES
-function getNearbyPlaces (results, status, pagination) {
+function getNearbyPlaces(results, status, pagination) {
 
-      if (status !== 'OK') return;
+  if (status !== 'OK') return;
 
-      getLatLong(results);
+  getLatLong(results);
 
-      createMarkers(results);
-      getNextPage = pagination.hasNextPage && function () {
-        pagination.nextPage();
-      };
-    }
-
-
-
-// AUTO COMPLETE - GET NEW CENTER
-function newLocation(newLat, newLng) {
-  map.setCenter({
-    lat: newLat,
-    lng: newLng
-  });
-
+  createMarkers(results);
+  getNextPage = pagination.hasNextPage && function () {
+    pagination.nextPage();
+  };
 }
 
-
+// Latitude, Longitude & Distance
 function getLatLong(coordinates) {
 
   // console.log(typeof(coordinates[0].geometry.location.lat()));
@@ -102,7 +91,7 @@ function getLatLong(coordinates) {
 
   //console.log(typeof(latitude))
   //console.log(longitude)
-  calculateDistance(latitude,longitude);
+  calculateDistance(latitude, longitude);
 
 }
 
@@ -131,14 +120,13 @@ function createMarkers(places) {
   map.fitBounds(bounds);
 }
 
-function degrees_to_radians(degrees)
-{
+function degrees_to_radians(degrees) {
   var pi = Math.PI;
-  return degrees * (pi/180);
+  return degrees * (pi / 180);
 }
 
 
-function calculateDistance(lats, longs){
+function calculateDistance(lats, longs) {
 
   var distance = [];
 
@@ -146,9 +134,8 @@ function calculateDistance(lats, longs){
   var rlat1, rlat2, difflat, difflon, dist, j;
 
 
-  for(var i=0;i<lats.length;i++)
-  {
-    j= i+1;
+  for (var i = 0; i < lats.length; i++) {
+    j = i + 1;
     j = j == lats.length ? 0 : j;
     //console.log("Value of J", j);
     rlat1 = degrees_to_radians(lats[i]);
@@ -156,25 +143,27 @@ function calculateDistance(lats, longs){
     //console.log("Hello",rlat1)
     //console.log("W",rlat2)
 
-    difflat = rlat2 - rlat1 ;
+    difflat = rlat2 - rlat1;
     //console.log("K", difflat);
 
-    difflon = degrees_to_radians(longs[j] -longs[i]);
+    difflon = degrees_to_radians(longs[j] - longs[i]);
 
     //console.log("g", difflon);
-    
-    dist = 2 * radius * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+
+    dist = 2 * radius * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
 
     //console.log(dist)
     distance.push(dist);
   }
-  console.log(distance);
+  //console.log(distance);
+
+  solution(distance);
 
 }
 
 // Shortest Distance Code Usind Dijiktr Algorithmn
 
-function minDistance(dist, sptSet) {
+function minDistance(dist, sptSet, V) {
 
   let min = Number.MAX_VALUE;
   let min_index = -1;
@@ -188,16 +177,17 @@ function minDistance(dist, sptSet) {
   return min_index;
 }
 
-function printSolution(dist) {
-  document.write("Vertex \t\t Distance from Source<br>");
+function printSolution(dist,V) {
+  //document.write("Vertex \t\t Distance from Source<br>");
   for (let i = 0; i < V; i++) {
-    document.write(i + " \t\t " +
-      dist[i] + "<br>");
+
+    console.log(i, dist[i])
+    
   }
 }
 
 
-function dijkstra(graph, src) {
+function dijkstra(graph, src, V) {
   let dist = new Array(V);
   let sptSet = new Array(V);
 
@@ -212,7 +202,7 @@ function dijkstra(graph, src) {
   for (let count = 0; count < V - 1; count++) {
 
 
-    let u = minDistance(dist, sptSet);
+    let u = minDistance(dist, sptSet, V);
 
     sptSet[u] = true;
 
@@ -227,20 +217,11 @@ function dijkstra(graph, src) {
     }
   }
 
-  printSolution(dist);
+  printSolution(dist, V);
 }
+function solution(distance){
 
-// Driver code
-/*let graph = [ [ 0, 4, 0, 0, 0, 0, 0, 8, 0 ],
-              [ 4, 0, 8, 0, 0, 0, 0, 11, 0 ],
-              [ 0, 8, 0, 7, 0, 4, 0, 0, 2 ],
-              [ 0, 0, 7, 0, 9, 14, 0, 0, 0],
-              [ 0, 0, 0, 9, 0, 10, 0, 0, 0 ],
-              [ 0, 0, 4, 14, 10, 0, 2, 0, 0],
-              [ 0, 0, 0, 0, 0, 2, 0, 1, 6 ],
-              [ 8, 11, 0, 0, 0, 0, 1, 0, 7 ],
-              [ 0, 0, 2, 0, 0, 0, 6, 7, 0 ] ]
-dijkstra(graph, 0);*/
+//var distance = [40,10,30,20,60];
 
 var graph = new Array(distance.length);
 for (var i = 0; i < graph.length; i++) {
@@ -258,3 +239,15 @@ for (var i = 0; i < distance.length; i++) {
   }
 }
 
+for(var i=0; i<distance.length;i++){
+  var j =i+1;
+  j = j == distance.length ? 0 : j;
+  graph[i][j] = distance[i];
+  graph[j][i] = distance[i];
+}
+
+var n= distance.length;
+ 
+console.log(graph);
+dijkstra(graph,0,n);
+}
