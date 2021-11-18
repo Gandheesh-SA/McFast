@@ -1,9 +1,12 @@
 var map;
 var latitude = [];
 var longitude = [];
+var query;
 
 
 function initMap() {
+  
+  
  
 
   var style = [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }];
@@ -16,12 +19,14 @@ function initMap() {
 
   var position = new google.maps.LatLng(location.lat, location.lng);
 
+
   var options = { styles: style, center: position, zoom: 18 };
 
   const mapDiv = document.getElementById('map');
   map = new google.maps.Map(mapDiv, options);
 
-  let marker = new google.maps.Marker({ position: location, map: map, label: "You are Here" });
+  let marker = new google.maps.Marker({ position: location, map: map, label: "You are Here" }); 
+
 
   var service = new google.maps.places.PlacesService(map);
   service.nearbySearch({ location: location, radius: 1000, type: ['hospital'], keyword: "((Hospitals) AND (24 hours)", }, getNearbyPlaces);
@@ -175,13 +180,13 @@ function calculateDistance(lats, longs, places)  {
 
 // Shortest Distance Code Using Dijiktr Algorithmn
 
-function minDistance(dist, sptSet, V) {
+function minDistance(dist, shortest, V) {
 
   let min = Number.MAX_VALUE;
   let min_index = -1;
 
   for (let v = 0; v < V; v++) {
-    if (sptSet[v] == false && dist[v] <= min) {
+    if (shortest[v] == false && dist[v] <= min) {
       min = dist[v];
       min_index = v;
     }
@@ -213,7 +218,7 @@ function display(dist,V, places) {
   
   
   items.sort(function(first, second) {
-    return second[1] - first[1];
+    return first[1] - second[1];
   });
 
   console.log(items)
@@ -222,35 +227,36 @@ function display(dist,V, places) {
 
   for (let i = 0; i < items.length; i++) {
 
-    e +=  items[i][0] + " = " + items[i][1] + "<br/>";
+    e += '<h4>' + items[i][0] + " = " + items[i][1] + "<br/>";
     
   }
   document.getElementById("result").innerHTML = e;
 }
 
-function dijkstra(graph, src, V, places) {
+function dijkstra(graph, source, V, places) {
+
   let dist = new Array(V);
-  let sptSet = new Array(V);
+  let Shortest = new Array(V);
 
   for (let i = 0; i < V; i++) {
     dist[i] = Number.MAX_VALUE;
-    sptSet[i] = false;
+    Shortest[i] = false;
   }
 
 
-  dist[src] = 0;
+  dist[source] = 0;
 
   for (let count = 0; count < V - 1; count++) {
 
 
-    let u = minDistance(dist, sptSet, V);
+    let u = minDistance(dist, Shortest, V);
 
-    sptSet[u] = true;
+    Shortest[u] = true;
 
 
     for (let v = 0; v < V; v++) {
 
-      if (!sptSet[v] && graph[u][v] != 0 &&
+      if (!Shortest[v] && graph[u][v] != 0 &&
         dist[u] != Number.MAX_VALUE &&
         dist[u] + graph[u][v] < dist[v]) {
         dist[v] = dist[u] + graph[u][v];
@@ -291,3 +297,11 @@ var n= distance.length;
 
 dijkstra(graph,0,n, places);
 }
+
+function getHeading(){
+ 
+  query = document.getElementsByTagName('a')[0].innerHTML;
+  console.log(query);
+}
+
+getHeading()

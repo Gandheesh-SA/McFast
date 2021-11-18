@@ -229,3 +229,7 @@
     font-size: 1.7rem;
     font-family: 'Ubuntu', sans-serif;
 }
+
+#result{
+    padding: 2rem;
+}
