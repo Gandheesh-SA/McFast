@@ -1,8 +1,7 @@
 var map;
 var latitude = [];
 var longitude = [];
-var heading = document.getElementById('Hospitals');
-var s = heading.getAttribute('id');
+
 
 function initMap() {
  
@@ -10,6 +9,7 @@ function initMap() {
   var style = [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }];
 
   var location = { lat: 12.954990815643217, lng: 77.6604692452247 }
+  
 
   latitude.push(location.lat);
   longitude.push(location.lng);
@@ -60,7 +60,7 @@ function initMap() {
     latitude.push(originLocation.lat());
     longitude.push(originLocation.lng());
 
-    service.nearbySearch({ location: originLocation,  rankBy: google.maps.places.RankBy.DISTANCE, type: ['hospital'], keyword: "((Hospitals) AND (24 hours)", }, getNearbyPlaces);
+    service.nearbySearch({ location: originLocation,  radius: 1000, type: ['hospital'], keyword: "((Hospitals) AND (24 hours)", }, getNearbyPlaces);
 
 
   });
@@ -99,7 +99,7 @@ function getLatLong(coordinates) {
 
   console.log(places)
   //console.log(longitude)
-  calculateDistance(latitude, longitude);
+  calculateDistance(latitude, longitude, places);
 
 }
 
@@ -110,7 +110,7 @@ function createMarkers(places) {
   for (var i = 0, place; place = places[i]; i++) {
 
     var image = {
-      //url: i,
+      url: i,
       size: new google.maps.Size(71, 71),
       origin: new google.maps.Point(0, 0),
       anchor: new google.maps.Point(17, 34),
@@ -129,13 +129,16 @@ function createMarkers(places) {
   map.fitBounds(bounds);
 }
 
+ 
+// FUNCTION TO CALCULATE DISTANCE
+
 function degrees_to_radians(degrees) {
   var pi = Math.PI;
   return degrees * (pi / 180);
 }
 
 
-function calculateDistance(lats, longs) {
+function calculateDistance(lats, longs, places)  {
 
   var distance = [];
 
@@ -166,11 +169,11 @@ function calculateDistance(lats, longs) {
   }
   //console.log(distance);
 
-  solution(distance);
+  solution(distance, places);
 
 }
 
-// Shortest Distance Code Usind Dijiktr Algorithmn
+// Shortest Distance Code Using Dijiktr Algorithmn
 
 function minDistance(dist, sptSet, V) {
 
@@ -186,21 +189,46 @@ function minDistance(dist, sptSet, V) {
   return min_index;
 }
 
-function printSolution(dist,V) {
-  //document.write("Vertex \t\t Distance from Source<br>");
+function display(dist,V, places) { 
+
+  var dict ={};
+
+  var items = Object.keys(dict).map(function(key) {
+    return [key, dict[key]];
+  });
+  
+ 
+  items.sort(function(first, second) {
+    return second[1] - first[1];
+  });
+  
+
+  for(var i=1;i<V;i++){
+    dict[places[i-1]] = dist[i]
+  }
+  
+  var items = Object.keys(dict).map(function(key) {
+    return [key, dict[key]];
+  });
+  
+  
+  items.sort(function(first, second) {
+    return second[1] - first[1];
+  });
+
+  console.log(items)
 
   var e = "<hr/>";
 
-  for (let i = 0; i < V; i++) {
+  for (let i = 0; i < items.length; i++) {
 
-    e += "Element " + i + " = " + dist[i] + "<br/>";
+    e +=  items[i][0] + " = " + items[i][1] + "<br/>";
     
   }
   document.getElementById("result").innerHTML = e;
 }
 
-
-function dijkstra(graph, src, V) {
+function dijkstra(graph, src, V, places) {
   let dist = new Array(V);
   let sptSet = new Array(V);
 
@@ -231,11 +259,9 @@ function dijkstra(graph, src, V) {
   }
  
 
-  printSolution(dist, V);
+  display(dist, V, places);
 }
-function solution(distance){
-
-//var distance = [40,10,30,20,60];
+function solution(distance, places){
 
 var graph = new Array(distance.length);
 for (var i = 0; i < graph.length; i++) {
@@ -262,7 +288,6 @@ for(var i=0; i<distance.length;i++){
 
 var n= distance.length;
 
- //console.log(s)
-//console.log(graph);
-dijkstra(graph,0,n);
+
+dijkstra(graph,0,n, places);
 }
