@@ -110,3 +110,122 @@
 .navs h3{
     font-family: 'Ubuntu', sans-serif; 
 }
+
+/*INDEX.HTML*/
+#home{
+    width: 100vw;
+    height: 100vh;
+    background-color:white;
+}
+/* NAV BAR */
+.navs{
+    background: black;
+    color: #fff;
+    height: 10vh;
+}
+.logo{
+    margin-right: .8rem;
+    margin-left: .8rem;
+}
+.tweet:hover{
+    color: #1DA1F2;
+}
+.face:hover{
+    color:#4267B2;
+}
+.in:hover{
+    color:#bc2a8d;
+}
+.you:hover{
+    color:#FF0000;
+}
+.linked:hover{
+    color: #0e76a8;
+}
+
+/* DIVISION*/
+
+.left, .right{
+    height: 90vh;
+    width: 100%;
+    
+}
+
+
+/* IMAGE*/
+
+
+.img{
+    
+    height: 50vh;
+    width: 40vw;
+    margin-top: 8rem;
+
+}
+
+/* SEARCH */
+
+.search{
+  position: absolute;
+  top: 15%;
+  left: 20%;
+
+ 
+}
+.loc{
+    
+    margin-bottom: 3rem;
+    outline-color: black;
+    text-transform: capitalize;
+}
+.buttons{
+    position: absolute;
+    top: 90%;
+  left: 25%;
+}
+.buts {
+    display: block;
+
+    position: relative;
+    margin-bottom: 1.5rem;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1.3rem;
+    color: white;
+    padding: 15px 25px;
+    text-decoration: none;
+
+}
+.buts:hover{
+    background-color: black;
+    color: white;
+    border-color: black;
+    text-decoration: none;
+}
+.buts2{
+    background-color: #660066;
+    border-color: #660066;
+    color: white;
+}
+.buts1{
+    background-color: #000066;
+    border-color: #000066;
+}
+.buts3{
+    background-color: #996600;
+    border-color: #996600;
+}
+.search h1{
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 6rem;
+    text-align: center;
+}
+.search p{
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.h1{
+    font-size: 1.7rem;
+    font-family: 'Ubuntu', sans-serif;
+}

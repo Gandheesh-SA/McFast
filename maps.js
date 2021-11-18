@@ -1,9 +1,11 @@
 var map;
 var latitude = [];
 var longitude = [];
-
+var heading = document.getElementById('Hospitals');
+var s = heading.getAttribute('id');
 
 function initMap() {
+ 
 
   var style = [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }];
 
@@ -58,7 +60,7 @@ function initMap() {
     latitude.push(originLocation.lat());
     longitude.push(originLocation.lng());
 
-    service.nearbySearch({ location: originLocation, radius: 1000, type: ['hospital'], keyword: "((Hospitals) AND (24 hours)", }, getNearbyPlaces);
+    service.nearbySearch({ location: originLocation,  rankBy: google.maps.places.RankBy.DISTANCE, type: ['hospital'], keyword: "((Hospitals) AND (24 hours)", }, getNearbyPlaces);
 
 
   });
@@ -82,14 +84,20 @@ function getLatLong(coordinates) {
 
   // console.log(typeof(coordinates[0].geometry.location.lat()));
 
+  //console.log(coordinates);
+
+  var places = [];
+
   for (var i = 0; i < coordinates.length; i++) {
+
+    places.push(coordinates[i].name);
 
     latitude.push(coordinates[i].geometry.location.lat());
     longitude.push(coordinates[i].geometry.location.lng());
 
   }
 
-  //console.log(typeof(latitude))
+  console.log(places)
   //console.log(longitude)
   calculateDistance(latitude, longitude);
 
@@ -111,6 +119,7 @@ function createMarkers(places) {
 
     var marker = new google.maps.Marker({
       map: map,
+      
       icon: image,
       label: place.name,
       position: place.geometry.location
@@ -179,11 +188,15 @@ function minDistance(dist, sptSet, V) {
 
 function printSolution(dist,V) {
   //document.write("Vertex \t\t Distance from Source<br>");
+
+  var e = "<hr/>";
+
   for (let i = 0; i < V; i++) {
 
-    console.log(i, dist[i])
+    e += "Element " + i + " = " + dist[i] + "<br/>";
     
   }
+  document.getElementById("result").innerHTML = e;
 }
 
 
@@ -216,6 +229,7 @@ function dijkstra(graph, src, V) {
       }
     }
   }
+ 
 
   printSolution(dist, V);
 }
@@ -247,7 +261,8 @@ for(var i=0; i<distance.length;i++){
 }
 
 var n= distance.length;
- 
-console.log(graph);
+
+ //console.log(s)
+//console.log(graph);
 dijkstra(graph,0,n);
 }
